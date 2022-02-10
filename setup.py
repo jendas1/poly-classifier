@@ -11,9 +11,6 @@ setup(
     description="A command-line tool for automatically classifying LCL problems on regular trees in the polynomial region.",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/jendas1/poly-classifier",
-    author="Jan Studeny",
-    author_email="jendas1@yahoo.com",
     license="Unlicense",
     classifiers=[
         "License :: OSI Approved :: The Unlicense (Unlicense)",
