@@ -5,7 +5,7 @@ This folder contains a program that decides round complexity of homogenous LCL p
 
 ## Usage
 
-1. Install dependencies by `pip3 install -r requirements.txt`.
+1. Install package using pip by running `pip3 install .`.
 
 2. Run `python -m poly_classifier` and describe (on standard input) configurations of a problem.
 For example:
