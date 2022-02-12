@@ -20,7 +20,7 @@ def trim(labels, configurations):
     # lemma 5.28 in the paper
     while True:
         new_labels = get_new_labels(labels, configurations)
-        assert not (set(new_labels) - set(labels))
+        assert not (set(new_labels) - set(labels)) # trimming labels should not introduce any new labels
         if set(new_labels) == set(labels):
             break
         else:
@@ -32,6 +32,8 @@ def get_new_labels(old_labels, configurations):
     new_labels = set()
     for conf in configurations:
         pot_label = conf[0]
+        if pot_label not in old_labels:
+            continue
         ok = True
         for cont_label in conf[1:]:
             if cont_label not in old_labels:

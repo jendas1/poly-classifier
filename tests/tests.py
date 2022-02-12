@@ -90,6 +90,69 @@ D e
 
 """
 
+big_input_v1 = \
+    b"""a : b b
+a : b c
+a : c c
+b : a a
+b : a c
+b : c c
+c : a d
+c : b d
+c : c d
+c : d d
+d : e e
+d : e f
+d : f f
+e : d d
+e : d f
+e : f f
+f : d g
+f : e g
+f : f g
+f : g g
+g : h h
+h : g g
+
+"""
+
+big_input_v2 = \
+    b"""
+a : b b
+a : b c
+a : c c
+b : a a
+b : a c
+b : c c
+c : a d
+c : b d
+c : c d
+c : d d
+d : e e
+d : e f
+d : f f
+e : d d
+e : d f
+e : f f
+f : d g
+f : e g
+f : f g
+f : g g
+g : h h
+g : h i
+g : i i
+h : g g
+h : g i
+h : i i
+i : g j
+i : h j
+i : i j
+i : j j
+j : k k
+k : j j
+
+"""
+
 class TestE2E(unittest.TestCase):
     def testPolyDecider(self):
         result = get_new_labels([('A', 'A', 'A')], [('A', 'A')], ['A'])
@@ -165,5 +228,15 @@ class TestE2E(unittest.TestCase):
 
     def testUnsolvableTrimV2(self):
         result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=unsolvable_trim_v2, capture_output=True)
+        lines = str(result.stdout.decode('utf-8')).split('\n')
+        self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/0)).")
+
+    def testBigInputV1(self):
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=big_input_v1, capture_output=True)
+        lines = str(result.stdout.decode('utf-8')).split('\n')
+        self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/2)).")
+
+    def testBigInputV2(self):
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=big_input_v2, capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
         self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/0)).")

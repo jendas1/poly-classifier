@@ -1,7 +1,11 @@
 import itertools
 
-from .rooted_poly_decider import rooted_polynomial_classifier
-from .unrooted_poly_decider import unrooted_polynomial_classifier
+try:
+    from .rooted_poly_decider import rooted_polynomial_classifier
+    from .unrooted_poly_decider import unrooted_polynomial_classifier
+except ImportError:
+    from poly_classifier import rooted_polynomial_classifier
+    from poly_classifier import unrooted_polynomial_classifier
 
 if __name__ == "__main__":
     print("Polynomial classifier for homogenous trees (currently for binary rooted & unrooted trees)")
