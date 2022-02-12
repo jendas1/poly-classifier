@@ -37,6 +37,29 @@ three_coloring = \
 
 """
 
+two_col_with_choice = \
+    b"""a: a b
+b: a a
+
+"""
+
+sinkless_orientation = \
+    b"""a b b
+a a b
+a a a
+
+a b
+
+"""
+
+unsolvable_rooted = \
+    b"""a: a b
+b: b c
+c: c d
+d: d e
+
+"""
+
 class TestE2E(unittest.TestCase):
     def testPolyDecider(self):
         result = get_new_labels([('A', 'A', 'A')], [('A', 'A')], ['A'])
@@ -89,3 +112,18 @@ class TestE2E(unittest.TestCase):
         result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=three_coloring, capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
         self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/inf)).")
+
+    def testTwoColWithChoice(self):
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=two_col_with_choice, capture_output=True)
+        lines = str(result.stdout.decode('utf-8')).split('\n')
+        self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/inf)).")
+
+    def testSinklessOrientation(self):
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=sinkless_orientation, capture_output=True)
+        lines = str(result.stdout.decode('utf-8')).split('\n')
+        self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/inf)).")
+
+    def testUnsolvableRooted(self):
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=unsolvable_rooted, capture_output=True)
+        lines = str(result.stdout.decode('utf-8')).split('\n')
+        self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/0)).")
