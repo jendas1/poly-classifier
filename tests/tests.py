@@ -1,16 +1,23 @@
 #!/usr/bin/python3
 
-# Test problems for the unrooted case come from an unpublished manuscript whose conference version is named:
-# Local Problems on Trees from the Perspectives of Distributed Algorithms, Finitary Factors, and Descriptive Combinatorics
-# by Brandt, Sebastian ; Chang, Yi-Jun ; Grebík, Jan ; Grunau, Christoph ; Rozhoň, Václav ; Vidnyánszky, Zoltán
+# Some of the test problems for the unrooted case come from an unpublished manuscript whose conference version is
+# "Local Problems on Trees from the Perspectives of Distributed Algorithms, Finitary Factors, and Descriptive Combinatorics"
+# by Sebastian Brandt, Yi-Jun Chang, Jan Grebík, Christoph Grunau, Václav Rozhoň, and Zoltán Vidnyánszky
+# https://arxiv.org/abs/2106.02066
+#
+# Some of the test problems for the rooted case come from
+# "Locally Checkable Problems in Rooted Trees"
+# by Alkida Balliu, Sebastian Brandt, Yi-Jun Chang, Dennis Olivetti, Jan Studený, Jukka Suomela, Aleksandr Tereshchenko
+# https://arxiv.org/abs/2102.09277
 
 import itertools
 import subprocess
 import sys
 import unittest
 from poly_classifier.unrooted_poly_decider import get_new_labels, unrooted_polynomial_classifier
+from poly_classifier.rooted_poly_decider import rooted_polynomial_classifier
 
-sqrt_input = \
+sqrt_rooted_1 = \
     b"""1 : 2 2
 1 : 2 x
 1 : x x
@@ -23,6 +30,41 @@ x : x a
 x : a a
 a : b b
 b : a a
+
+"""
+
+sqrt_rooted_2 = \
+    b"""a1 : b1 b1
+a2 : a1 a1
+a2 : a1 b1
+a2 : a1 b2
+a2 : a1 x1
+a2 : b1 b1
+a2 : b1 b2
+a2 : b1 x1
+a2 : b2 b2
+a2 : b2 x1
+a2 : x1 x1
+b1 : a1 a1
+b2 : a1 a1
+b2 : a1 a2
+b2 : a1 b1
+b2 : a1 x1
+b2 : a2 a2
+b2 : a2 b1
+b2 : a2 x1
+b2 : b1 b1
+b2 : b1 x1
+b2 : x1 x1
+x1 : a1 a1
+x1 : a1 a2
+x1 : a1 b1
+x1 : a1 b2
+x1 : a1 x1
+x1 : a2 b1
+x1 : b1 b1
+x1 : b1 b2
+x1 : b1 x1
 
 """
 
@@ -173,10 +215,8 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(unrooted_polynomial_classifier(V2, E2), 2)  # 2 (rake & compress)
 
-    def testProblemGeneration(self):
+    def testProblemGenerationUnrooted(self):
         def create_k_problem(k):
-
-
             comp_confs = [(f"x{i}", f"x{i}", f"y{i}") for i in range(k)]
             rake_confs = [(f"a{i}", f"b{i}", f"b{i}") for i in range(k)]
             rake_star_confs = [(f"b{i}", f"b{i}", f"b{i}") for i in range(k)]
@@ -195,8 +235,40 @@ class TestE2E(unittest.TestCase):
             configurations, edge_configurations = create_k_problem(i)
             self.assertEqual(unrooted_polynomial_classifier(configurations, edge_configurations), i)
 
-    def testSqrtProbRooted(self):
-        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=sqrt_input, capture_output=True)
+    def testProblemGenerationRooted(self):
+        def create_k_problem(k):
+            configurations = []
+            def gen(l, s, t):
+                return [ f'{l}{j}' for j in range(s, t+1) ]
+            for i in range(1, k+1):
+                ss = gen('a', 1, i-1) + gen('b', 1, i) + gen('x', 1, i-1)
+                for s1 in ss:
+                    for s2 in ss:
+                        configurations.append([f'a{i}', s1, s2])
+            for i in range(1, k+1):
+                ss = gen('a', 1, i) + gen('b', 1, i-1) + gen('x', 1, i-1)
+                for s1 in ss:
+                    for s2 in ss:
+                        configurations.append([f'b{i}', s1, s2])
+            for i in range(1, k):
+                ss1 = gen('a', 1, k) + gen('b', 1, k) + gen('x', 1, k-1)
+                ss2 = gen('a', 1, i) + gen('b', 1, i) + gen('x', 1, i-1)
+                for s1 in ss1:
+                    for s2 in ss2:
+                        configurations.append([f'x{i}', s1, s2])
+            return configurations
+
+        for i in range(5):
+            configurations = create_k_problem(i)
+            self.assertEqual(rooted_polynomial_classifier(configurations), i)
+
+    def testSqrtRooted1(self):
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=sqrt_rooted_1, capture_output=True)
+        lines = str(result.stdout.decode('utf-8')).split('\n')
+        self.assertEqual(lines[-2], "Problem Π is Θ(n^(1/2)) round solvable.")
+
+    def testSqrtRooted2(self):
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=sqrt_rooted_2, capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
         self.assertEqual(lines[-2], "Problem Π is Θ(n^(1/2)) round solvable.")
 
