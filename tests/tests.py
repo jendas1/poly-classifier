@@ -199,44 +199,44 @@ class TestE2E(unittest.TestCase):
     def testSqrtProbRooted(self):
         result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=sqrt_input, capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
-        self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/2)).")
+        self.assertEqual(lines[-2], "Problem Π is Θ(n^(1/2)) round solvable.")
 
     def testThreeCol(self):
         result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=three_coloring, capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
-        self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/inf)).")
+        self.assertEqual(lines[-2], "Problem Π is O(log(n)) round solvable.")
 
     def testTwoColWithChoice(self):
         result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=two_col_with_choice, capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
-        self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/inf)).")
+        self.assertEqual(lines[-2], "Problem Π is O(log(n)) round solvable.")
 
     def testSinklessOrientation(self):
         result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=sinkless_orientation, capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
-        self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/inf)).")
+        self.assertEqual(lines[-2], "Problem Π is O(log(n)) round solvable.")
 
     def testUnsolvableRooted(self):
         result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=unsolvable_rooted, capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
-        self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/0)).")
+        self.assertEqual(lines[-2], "Problem Π is 'unsolvable in a strict sense'.")
 
     def testUnsolvableTrim(self):
         result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=unsolvable_trim, capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
-        self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/0)).")
+        self.assertEqual(lines[-2], "Problem Π is 'unsolvable in a strict sense'.")
 
     def testUnsolvableTrimV2(self):
         result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=unsolvable_trim_v2, capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
-        self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/0)).")
+        self.assertEqual(lines[-2], "Problem Π is 'unsolvable in a strict sense'.")
 
     def testBigInputV1(self):
         result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=big_input_v1, capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
-        self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/2)).")
+        self.assertEqual(lines[-2], "Problem Π is Θ(n^(1/2)) round solvable.")
 
     def testBigInputV2(self):
         result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=big_input_v2, capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
-        self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/0)).")
+        self.assertEqual(lines[-2], "Problem Π is 'unsolvable in a strict sense'.")

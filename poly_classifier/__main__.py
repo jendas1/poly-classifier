@@ -1,4 +1,5 @@
 import itertools
+import math
 
 try:
     from .rooted_poly_decider import rooted_polynomial_classifier
@@ -12,12 +13,13 @@ if __name__ == "__main__":
     print("For unrooted case, use node configuration in form: 'A B C' and edge configurations in form 'A B'")
     print("For rooted case, use only node configurations in form 'A: B C'.")
     configurations = []
+    k = None
     line = input("Node configurations: (each configuration on a new line and end with empty line)\n")
     if ":" in line:  # rooted case
         while line != "":
             configurations.append(tuple(itertools.chain(*[x.split() for x in line.strip().split(":")])))
             line = input()
-        print(f"Complexity of the problem is Θ(n^(1/{rooted_polynomial_classifier(configurations)})).")
+        k = rooted_polynomial_classifier(configurations)
     else:  # unrooted case
         while line != "":
             configurations.append(tuple(line.split()))
@@ -27,4 +29,13 @@ if __name__ == "__main__":
         while line != "":
             edge_configurations.append(tuple(line.split()))
             line = input()
-        print(f"Complexity of the problem is Θ(n^(1/{unrooted_polynomial_classifier(configurations, edge_configurations)})).")
+        k = unrooted_polynomial_classifier(configurations, edge_configurations)
+    if k == 0:
+        print(f"Problem Π is 'unsolvable in a strict sense'.")
+    elif k == math.inf:
+        print(f"Problem Π is O(log(n)) round solvable.")
+    else:
+        print(f"Problem Π is Θ(n^(1/{k})) round solvable.")
+
+
+
