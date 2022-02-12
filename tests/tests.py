@@ -1,4 +1,9 @@
 #!/usr/bin/python3
+
+# Test problems for the unrooted case come from an unpublished manuscript whose conference version is named:
+# Local Problems on Trees from the Perspectives of Distributed Algorithms, Finitary Factors, and Descriptive Combinatorics
+# by Brandt, Sebastian ; Chang, Yi-Jun ; Grebík, Jan ; Grunau, Christoph ; Rozhoň, Václav ; Vidnyánszky, Zoltán
+
 import itertools
 import subprocess
 import sys
@@ -55,6 +60,8 @@ class TestE2E(unittest.TestCase):
 
     def testProblemGeneration(self):
         def create_k_problem(k):
+
+
             comp_confs = [(f"x{i}", f"x{i}", f"y{i}") for i in range(k)]
             rake_confs = [(f"a{i}", f"b{i}", f"b{i}") for i in range(k)]
             rake_star_confs = [(f"b{i}", f"b{i}", f"b{i}") for i in range(k)]
