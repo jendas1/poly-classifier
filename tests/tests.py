@@ -231,7 +231,7 @@ class TestE2E(unittest.TestCase):
             edge_configurations = list(itertools.chain(edge_confs_1, edge_confs_2, edge_confs_3))
             return configurations, edge_configurations
 
-        for i in range(5):
+        for i in range(6):
             configurations, edge_configurations = create_k_problem(i)
             self.assertEqual(unrooted_polynomial_classifier(configurations, edge_configurations), i)
 
@@ -258,7 +258,7 @@ class TestE2E(unittest.TestCase):
                         configurations.append([f'x{i}', s1, s2])
             return configurations
 
-        for i in range(5):
+        for i in range(6):
             configurations = create_k_problem(i)
             self.assertEqual(rooted_polynomial_classifier(configurations), i)
 
