@@ -117,8 +117,7 @@ h : g g
 """
 
 big_input_v2 = \
-    b"""
-a : b b
+    b"""a : b b
 a : b c
 a : c c
 b : a a
@@ -239,4 +238,5 @@ class TestE2E(unittest.TestCase):
     def testBigInputV2(self):
         result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=big_input_v2, capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
-        self.assertEqual(lines[-2], "Problem Π is 'unsolvable in a strict sense'.")
+        self.assertEqual(lines[-2], "Problem Π is Θ(n^(1/2)) round solvable.")
+
