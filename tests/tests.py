@@ -11,6 +11,8 @@
 # https://arxiv.org/abs/2102.09277
 
 import itertools
+import random
+import string
 import subprocess
 import sys
 import unittest
@@ -261,6 +263,54 @@ class TestE2E(unittest.TestCase):
         for i in range(6):
             configurations = create_k_problem(i)
             self.assertEqual(rooted_polynomial_classifier(configurations), i)
+
+    def testRandomUnrooted(self):
+        total = 30
+        for seed in range(4):
+            random.seed(seed)
+            ss = string.ascii_lowercase
+            configurations = []
+            for i in range(total):
+                a, b, c = random.choices(ss, k=3)
+                configurations.append((a, b, c))
+            edge_configurations = []
+            for i in range(total):
+                a, b = random.choices(ss, k=2)
+                edge_configurations.append((a, b))
+            prev = 0
+            infcount = 0
+            for i in range(total):
+                k = unrooted_polynomial_classifier(configurations[:i], edge_configurations[:i])
+                # print(i, k)
+                assert prev <= k
+                prev = k
+                if k == float('inf'):
+                    infcount += 1
+                    if infcount >= 2:
+                        break
+            self.assertEqual(k, float('inf'))
+
+    def testRandomRooted(self):
+        total = 80
+        for seed in range(4):
+            random.seed(seed)
+            ss = string.ascii_lowercase
+            configurations = []
+            for i in range(total):
+                a, b, c = random.choices(ss, k=3)
+                configurations.append((a, b, c))
+            prev = 0
+            infcount = 0
+            for i in range(total):
+                k = rooted_polynomial_classifier(configurations[:i])
+                # print(i, k)
+                assert prev <= k
+                prev = k
+                if k == float('inf'):
+                    infcount += 1
+                    if infcount >= 10:
+                        break
+            self.assertEqual(k, float('inf'))
 
     def testSqrtRooted1(self):
         result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=sqrt_rooted_1, capture_output=True)
