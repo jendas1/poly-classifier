@@ -55,12 +55,13 @@ def get_new_labels(configurations, edge_configurations, old_labels):
             pot_label = conf[i]
             ok = True
             for j in range(delta):
+                first_label = conf[j]
                 if i == j:
                     continue
                 found = False
                 for sec_label in old_labels:
-                    if (pot_label, sec_label) in edge_configurations or \
-                            (sec_label, pot_label) in edge_configurations:
+                    if (first_label, sec_label) in edge_configurations or \
+                            (sec_label, first_label) in edge_configurations:
                         found = True
                 if not found:
                     ok = False

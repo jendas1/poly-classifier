@@ -60,6 +60,36 @@ d: d e
 
 """
 
+unsolvable_trim = \
+    b"""A a a
+B b b
+
+a a
+b b
+A b
+B c
+
+"""
+
+unsolvable_trim_v2 = \
+    b"""A a a
+B b b
+C c c
+D d d
+E e e
+
+a a
+b b
+c c
+d d
+e e
+A b
+B c
+C d
+D e
+
+"""
+
 class TestE2E(unittest.TestCase):
     def testPolyDecider(self):
         result = get_new_labels([('A', 'A', 'A')], [('A', 'A')], ['A'])
@@ -125,5 +155,15 @@ class TestE2E(unittest.TestCase):
 
     def testUnsolvableRooted(self):
         result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=unsolvable_rooted, capture_output=True)
+        lines = str(result.stdout.decode('utf-8')).split('\n')
+        self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/0)).")
+
+    def testUnsolvableTrim(self):
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=unsolvable_trim, capture_output=True)
+        lines = str(result.stdout.decode('utf-8')).split('\n')
+        self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/0)).")
+
+    def testUnsolvableTrimV2(self):
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=unsolvable_trim_v2, capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
         self.assertEqual(lines[-2], "Complexity of the problem is Θ(n^(1/0)).")
