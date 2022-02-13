@@ -24,7 +24,8 @@ def trim(configurations, edge_configurations):
     # lemma 4.24 in the paper
     labels = get_labels(configurations)
     while True:
-        new_labels = get_new_labels(configurations, edge_configurations, labels)
+        new_labels = get_new_labels(configurations, edge_configurations,
+                                    labels)
         assert not (set(new_labels) - set(labels))
         if set(new_labels) == set(labels):
             break
@@ -72,7 +73,9 @@ def get_new_labels(configurations, edge_configurations, old_labels):
 
 
 def create_graph(configurations, edge_configurations):
-    path_configurations = set(itertools.chain(*[itertools.permutations(conf, 2) for conf in configurations]))
+    path_configurations = set(
+        itertools.chain(
+            *[itertools.permutations(conf, 2) for conf in configurations]))
     graph = {path_conf: [] for path_conf in path_configurations}
     for s, edges in graph.items():
         for t in graph.keys():
@@ -118,10 +121,10 @@ def flexible_scc_restrictions(configurations, edge_configurations):
     components = UnionFind()
     for s in graph.keys():
         for t in graph.keys():
-            if (is_reachable(graph, s, t) and
-                    is_reachable(graph, s, (t[1], t[0])) and
-                    is_reachable(graph, (s[1], s[0]), t) and
-                    is_reachable(graph, (s[1], s[0]), (t[1], t[0]))):
+            if (is_reachable(graph, s, t)
+                    and is_reachable(graph, s, (t[1], t[0]))
+                    and is_reachable(graph, (s[1], s[0]), t)
+                    and is_reachable(graph, (s[1], s[0]), (t[1], t[0]))):
                 components.union(s, t)
 
     flexible_restrictions = []
@@ -138,9 +141,12 @@ def max_depth(configurations, edge_configurations):
     if not configurations:
         return 0
     maximum = 0
-    for flexible_restriction in flexible_scc_restrictions(configurations, edge_configurations):
-        if set(configurations) - set(flexible_restriction):  # if we removed something
-            depth = max_depth(trim(flexible_restriction, edge_configurations), edge_configurations)
+    for flexible_restriction in flexible_scc_restrictions(
+            configurations, edge_configurations):
+        if set(configurations) - set(
+                flexible_restriction):  # if we removed something
+            depth = max_depth(trim(flexible_restriction, edge_configurations),
+                              edge_configurations)
             maximum = max(maximum, depth)
         else:
             return math.inf
@@ -148,7 +154,5 @@ def max_depth(configurations, edge_configurations):
 
 
 def unrooted_polynomial_classifier(configurations, edge_configurations):
-    return max_depth(trim(configurations, edge_configurations), edge_configurations)
-
-
-
+    return max_depth(trim(configurations, edge_configurations),
+                     edge_configurations)

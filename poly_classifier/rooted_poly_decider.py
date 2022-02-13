@@ -20,7 +20,8 @@ def trim(labels, configurations):
     # lemma 5.28 in the paper
     while True:
         new_labels = get_new_labels(labels, configurations)
-        assert not (set(new_labels) - set(labels)) # trimming labels should not introduce any new labels
+        assert not (set(new_labels) - set(labels)
+                    )  # trimming labels should not introduce any new labels
         if set(new_labels) == set(labels):
             break
         else:
@@ -75,9 +76,11 @@ def max_depth(labels, configurations):
     if not labels:
         return 0
     maximum = 0
-    for flexible_restriction in flexible_scc_restrictions(labels, configurations):
+    for flexible_restriction in flexible_scc_restrictions(
+            labels, configurations):
         if labels - flexible_restriction:  # if we removed something
-            depth = max_depth(trim(flexible_restriction, configurations), configurations)
+            depth = max_depth(trim(flexible_restriction, configurations),
+                              configurations)
             maximum = max(maximum, depth)
         else:
             return math.inf

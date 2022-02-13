@@ -196,13 +196,16 @@ k : j j
 
 """
 
+
 class TestE2E(unittest.TestCase):
     def testPolyDecider(self):
         result = get_new_labels([('A', 'A', 'A')], [('A', 'A')], ['A'])
         self.assertEqual(result, set('A'))
 
     def testTwoCol(self):
-        self.assertEqual(unrooted_polynomial_classifier([(1, 1, 1), (2, 2, 2)], [(1, 2)]), 1)
+        self.assertEqual(
+            unrooted_polynomial_classifier([(1, 1, 1), (2, 2, 2)], [(1, 2)]),
+            1)
 
     def testSqrtProb(self):
         C2 = [("x1", "x1", "y1"), ("x2", "x2", "y2")]
@@ -212,10 +215,11 @@ class TestE2E(unittest.TestCase):
         V2 = list(itertools.chain(C2, R2, RS2))
 
         E2 = [("a1", "a1"), ("a2", "a2"), ("x1", "x1"), ("x2", "x2"),
-              ("x1", "b2"), ("x1", "y2"),
-              ("a1", "b1"), ("a1", "b2"), ("a1", "y1"), ("a2", "b2")]
+              ("x1", "b2"), ("x1", "y2"), ("a1", "b1"), ("a1", "b2"),
+              ("a1", "y1"), ("a2", "b2")]
 
-        self.assertEqual(unrooted_polynomial_classifier(V2, E2), 2)  # 2 (rake & compress)
+        self.assertEqual(unrooted_polynomial_classifier(V2, E2),
+                         2)  # 2 (rake & compress)
 
     def testProblemGenerationUnrooted(self):
         def create_k_problem(k):
@@ -223,38 +227,46 @@ class TestE2E(unittest.TestCase):
             rake_confs = [(f"a{i}", f"b{i}", f"b{i}") for i in range(k)]
             rake_star_confs = [(f"b{i}", f"b{i}", f"b{i}") for i in range(k)]
 
-            configurations = list(itertools.chain(comp_confs, rake_confs, rake_star_confs))
+            configurations = list(
+                itertools.chain(comp_confs, rake_confs, rake_star_confs))
 
-            edge_confs_1 = [(f"a{i}", f"a{i}") for i in range(k)] + [(f"x{i}", f"x{i}") for i in range(k)]
+            edge_confs_1 = [(f"a{i}", f"a{i}")
+                            for i in range(k)] + [(f"x{i}", f"x{i}")
+                                                  for i in range(k)]
             edge_confs_2 = [(f"x{i}", f"b{j}") for j in range(k) for i in range(k) if i < j] + \
                            [(f"x{i}", f"y{j}") for j in range(k) for i in range(k) if i < j]
             edge_confs_3 = [(f"a{i}", f"b{j}") for j in range(k) for i in range(k) if i <= j] + \
                            [(f"a{i}", f"y{j}") for j in range(k) for i in range(k) if i <= j]
-            edge_configurations = list(itertools.chain(edge_confs_1, edge_confs_2, edge_confs_3))
+            edge_configurations = list(
+                itertools.chain(edge_confs_1, edge_confs_2, edge_confs_3))
             return configurations, edge_configurations
 
         for i in range(6):
             configurations, edge_configurations = create_k_problem(i)
-            self.assertEqual(unrooted_polynomial_classifier(configurations, edge_configurations), i)
+            self.assertEqual(
+                unrooted_polynomial_classifier(configurations,
+                                               edge_configurations), i)
 
     def testProblemGenerationRooted(self):
         def create_k_problem(k):
             configurations = []
+
             def gen(l, s, t):
-                return [ f'{l}{j}' for j in range(s, t+1) ]
-            for i in range(1, k+1):
-                ss = gen('a', 1, i-1) + gen('b', 1, i) + gen('x', 1, i-1)
+                return [f'{l}{j}' for j in range(s, t + 1)]
+
+            for i in range(1, k + 1):
+                ss = gen('a', 1, i - 1) + gen('b', 1, i) + gen('x', 1, i - 1)
                 for s1 in ss:
                     for s2 in ss:
                         configurations.append([f'a{i}', s1, s2])
-            for i in range(1, k+1):
-                ss = gen('a', 1, i) + gen('b', 1, i-1) + gen('x', 1, i-1)
+            for i in range(1, k + 1):
+                ss = gen('a', 1, i) + gen('b', 1, i - 1) + gen('x', 1, i - 1)
                 for s1 in ss:
                     for s2 in ss:
                         configurations.append([f'b{i}', s1, s2])
             for i in range(1, k):
-                ss1 = gen('a', 1, k) + gen('b', 1, k) + gen('x', 1, k-1)
-                ss2 = gen('a', 1, i) + gen('b', 1, i) + gen('x', 1, i-1)
+                ss1 = gen('a', 1, k) + gen('b', 1, k) + gen('x', 1, k - 1)
+                ss2 = gen('a', 1, i) + gen('b', 1, i) + gen('x', 1, i - 1)
                 for s1 in ss1:
                     for s2 in ss2:
                         configurations.append([f'x{i}', s1, s2])
@@ -280,7 +292,8 @@ class TestE2E(unittest.TestCase):
             prev = 0
             infcount = 0
             for i in range(total):
-                k = unrooted_polynomial_classifier(configurations[:i], edge_configurations[:i])
+                k = unrooted_polynomial_classifier(configurations[:i],
+                                                   edge_configurations[:i])
                 # print(i, k)
                 assert prev <= k
                 prev = k
@@ -313,52 +326,74 @@ class TestE2E(unittest.TestCase):
             self.assertEqual(k, float('inf'))
 
     def testSqrtRooted1(self):
-        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=sqrt_rooted_1, capture_output=True)
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'],
+                                input=sqrt_rooted_1,
+                                capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
         self.assertEqual(lines[-2], "Problem Π is Θ(n^(1/2)) round solvable.")
 
     def testSqrtRooted2(self):
-        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=sqrt_rooted_2, capture_output=True)
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'],
+                                input=sqrt_rooted_2,
+                                capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
         self.assertEqual(lines[-2], "Problem Π is Θ(n^(1/2)) round solvable.")
 
     def testThreeCol(self):
-        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=three_coloring, capture_output=True)
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'],
+                                input=three_coloring,
+                                capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
         self.assertEqual(lines[-2], "Problem Π is O(log(n)) round solvable.")
 
     def testTwoColWithChoice(self):
-        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=two_col_with_choice, capture_output=True)
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'],
+                                input=two_col_with_choice,
+                                capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
         self.assertEqual(lines[-2], "Problem Π is O(log(n)) round solvable.")
 
     def testSinklessOrientation(self):
-        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=sinkless_orientation, capture_output=True)
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'],
+                                input=sinkless_orientation,
+                                capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
         self.assertEqual(lines[-2], "Problem Π is O(log(n)) round solvable.")
 
     def testUnsolvableRooted(self):
-        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=unsolvable_rooted, capture_output=True)
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'],
+                                input=unsolvable_rooted,
+                                capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
-        self.assertEqual(lines[-2], "Problem Π is 'unsolvable in a strict sense'.")
+        self.assertEqual(lines[-2],
+                         "Problem Π is 'unsolvable in a strict sense'.")
 
     def testUnsolvableTrim(self):
-        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=unsolvable_trim, capture_output=True)
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'],
+                                input=unsolvable_trim,
+                                capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
-        self.assertEqual(lines[-2], "Problem Π is 'unsolvable in a strict sense'.")
+        self.assertEqual(lines[-2],
+                         "Problem Π is 'unsolvable in a strict sense'.")
 
     def testUnsolvableTrimV2(self):
-        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=unsolvable_trim_v2, capture_output=True)
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'],
+                                input=unsolvable_trim_v2,
+                                capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
-        self.assertEqual(lines[-2], "Problem Π is 'unsolvable in a strict sense'.")
+        self.assertEqual(lines[-2],
+                         "Problem Π is 'unsolvable in a strict sense'.")
 
     def testBigInputV1(self):
-        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=big_input_v1, capture_output=True)
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'],
+                                input=big_input_v1,
+                                capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
         self.assertEqual(lines[-2], "Problem Π is Θ(n^(1/2)) round solvable.")
 
     def testBigInputV2(self):
-        result = subprocess.run([sys.executable, '-m', 'poly_classifier'], input=big_input_v2, capture_output=True)
+        result = subprocess.run([sys.executable, '-m', 'poly_classifier'],
+                                input=big_input_v2,
+                                capture_output=True)
         lines = str(result.stdout.decode('utf-8')).split('\n')
         self.assertEqual(lines[-2], "Problem Π is Θ(n^(1/2)) round solvable.")
-
