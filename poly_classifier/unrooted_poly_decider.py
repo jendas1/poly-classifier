@@ -52,23 +52,23 @@ def trim(configurations, edge_configurations):
 def get_new_labels(configurations, edge_configurations, old_labels):
     new_labels = set()
     for conf in configurations:
-        for i in range(delta):
-            pot_label = conf[i]
-            ok = True
-            for j in range(delta):
-                first_label = conf[j]
-                if i == j:
-                    continue
-                found = False
-                for sec_label in old_labels:
-                    if (first_label, sec_label) in edge_configurations or \
-                            (sec_label, first_label) in edge_configurations:
-                        found = True
-                if not found:
-                    ok = False
-                    break
-            if ok:
-                new_labels.add(pot_label)
+        invalid_count = 0
+        invalid_representative = None
+        for label in conf:
+            found = False
+            for sec_label in old_labels:
+                if (label, sec_label) in edge_configurations or \
+                        (sec_label, label) in edge_configurations:
+                    found = True
+            if not found:
+                invalid_count += 1
+                invalid_representative = label
+        if invalid_count == 0:
+            new_labels |= set(conf)
+        elif invalid_count == 1:
+            new_labels |= {invalid_representative}
+        else:
+            pass  # don't add any label
     return new_labels
 
 
